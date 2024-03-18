@@ -20,8 +20,18 @@ OBJCOPY     := $(cross_compile)objcopy
 #SD card
 SDDEVICE := /dev/sdb
 
+#uImage
+UIMAGE_LOAD_ADDRESS := 80400000
+UIMAGE_ENTRY_POINT := 80400000
+MKIMAGE := $(uboot_src_dir)/tools/mkimage
+
+#config
+buildroot_defconfig := $(root_dir)/configs/buildroot_defconfig
+
 all: $(RISCV)/fw_payload.bin
 
+
+config: make -C buildroot defconfig BR2_DEFCONFIG=$(buildroot_defconfig)
 
 $(RISCV) :
 	mkdir -p $(RISCV)
@@ -50,9 +60,16 @@ $(uboot_src_dir)/u-boot.bin:
 
 $(linux_src_dir)/vmlinux: 
 	make -C $(linux_src_dir) ARCH=$(arch) CROSS_COMPILE=$(cross_compile) -j4
-
-$(RISCV)/image: $(linux_src_dir)/vmlinux
+	
+$(RISCV)/vmlinux: $(buildroot_defconfig) $(RISCV) config
+	make -C buildroot -j4
+	cp buildroot/output/images/vmlinux $@
+	
+$(RISCV)/image: $(RISCV)/vmlinux
 	$(OBJCOPY) -O binary -R .note -R .comment -S $< $@
+	
+$(RISCV)/uImage: $(RISCV)/image
+	$(MKIMAGE) -A riscv -O linux -T kernel -C none -a $(UIMAGE_LOAD_ADDRESS) -e $(UIMAGE_ENTRY_POINT) -n "zerocore linux kernel" -d $< $@
 
 # SD COPY
 sd_part1 = $(shell lsblk $(SDDEVICE) -no PATH | head -2 | tail -1)
@@ -63,6 +80,7 @@ fwpayload_sectorend = $(shell echo $(fwpayload_sectorstart)+$(fwpayload_sectorsi
 image_sectorstart := 512M
 
 image: $(RISCV)/image
+uImage: $(RISCV)/uImage
 
 format-sd: 
 	sgdisk --clear -g --new=1:$(fwpayload_sectorstart):$(fwpayload_sectorend) --new=2:$(image_sectorstart):0 --typecode=1:3000 --typecode=2:8300 $(SDDEVICE)
