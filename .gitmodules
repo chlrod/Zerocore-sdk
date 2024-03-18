@@ -4,7 +4,9 @@
 	branch = zerocore_v2023.10
 [submodule "buildroot"]
 	path = buildroot
-	url = ./buildroot
+	url = https://github.com/buildroot/buildroot
+	branch = 954aeb7 
 [submodule "opensbi"]
 	path = opensbi
-	url = ./opensbi
+	url = https://github.com/riscv-software-src/opensbi
+	branch = 057eb10
