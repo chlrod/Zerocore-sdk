@@ -1,0 +1,10 @@
+[submodule "u-boot"]
+	path = u-boot
+	url = https://github.com/chlrod/u-boot
+	branch = zerocore_v2023.10
+[submodule "buildroot"]
+	path = buildroot
+	url = ./buildroot
+[submodule "opensbi"]
+	path = opensbi
+	url = ./opensbi
