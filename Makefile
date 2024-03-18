@@ -9,7 +9,7 @@ RISCV := $(root_dir)/install
 
 #path
 opensbi_src_dir := $(root_dir)/opensbi
-uboot_src_dir := $(root_dir)/u-boot-2023.10
+uboot_src_dir := $(root_dir)/u-boot
 linux_src_dir := $(root_dir)/linux-5.8
 
 #Compile option
@@ -55,7 +55,8 @@ $(RISCV)/u-boot.bin: $(uboot_src_dir)/u-boot.bin
 	cp $< $@
 	cp $(uboot_src_dir)/u-boot $(RISCV)/u-boot
 
-$(uboot_src_dir)/u-boot.bin: 
+$(uboot_src_dir)/u-boot.bin:
+	make -C $(uboot_src_dir) Zerocore_defconfig
 	make -C $(uboot_src_dir) ARCH=$(arch) CROSS_COMPILE=$(cross_compile) -j4
 
 $(linux_src_dir)/vmlinux: 
@@ -90,7 +91,7 @@ copy-sd: format-sd
 
 clean:
 	rm -rf $(RISCV)/fw_payload.* $(RISCV)/u-boot.bin
-	make -C u-boot-2023.10 clean
+	make -C u-boot clean
 	make -C opensbi distclean
 	
 
