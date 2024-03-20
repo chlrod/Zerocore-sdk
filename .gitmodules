@@ -6,3 +6,7 @@
 	path = buildroot
 	url = https://github.com/buildroot/buildroot
 	branch = 954aeb7 
+[submodule "opensbi"]
+	path = opensbi
+	url = https://github.com/chlrod/opensbi
+	branch = v1.2

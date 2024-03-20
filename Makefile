@@ -37,7 +37,7 @@ $(RISCV) :
 	mkdir -p $(RISCV)
 
 $(RISCV)/dtb :
-	cp u-boot-2023.10/arch/riscv/dts/$(prj).dtb $(RISCV)/$(prj).dtb
+	cp $(uboot_src_dir)/arch/riscv/dts/$(prj).dtb $(RISCV)/$(prj).dtb
 
 $(RISCV)/fw_payload.bin: $(RISCV)/u-boot.bin $(RISCV)/dtb
 	make -C opensbi FW_PAYLOAD_PATH=$< $(sbi-mk)
